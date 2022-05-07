@@ -1,11 +1,9 @@
 package server;
 
-import entity.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
+import register.ServiceRegistry;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -23,32 +21,35 @@ public class RpcServer {
 
     private final ExecutorService threadPool;
 
-    public RpcServer() {
-        //初始化线程池
-        int corePoolSize = 5;
-        int maximumPoolSize = 50;
-        long keepAliveTime = 60;
-        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(100);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+    private static final int CORE_POOL_SIZE = 5;
+    private static final int MAXIMUM_POOL_SIZE = 50;
+    private static final int KEEP_ALIVE_TIME = 60;
+    private static final int BLOCKING_QUEUE_CAPACITY = 100;
+    private RequestHandler requestHandler = new RequestHandler();
+    private final ServiceRegistry serviceRegistry;
 
-        threadPool = new ThreadPoolExecutor(corePoolSize,maximumPoolSize,
-                keepAliveTime,TimeUnit.SECONDS,workingQueue,threadFactory);
+    public RpcServer(ServiceRegistry serviceRegistry) {
+        //初始化线程池
+        this.serviceRegistry = serviceRegistry;
+        BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS, workingQueue, threadFactory);
+
     }
 
     /**
      * RpcServer暂时只能注册一个接口，即对外提供一个接口的调用服务，添加register方法，在注册完一个服务后立刻开始监听：
-     * @param service 客户端远程调用的服务，属于是Api的实现
      * @param port
      */
-    public void register(Object service,int port){
+    public void start(int port){
         try(ServerSocket serverSocket = new ServerSocket(port)) {
             //侦听客户端
             log.info("服务已经启动...");
             Socket socket;
             while ((socket=serverSocket.accept())!=null){
-                log.info("客户端链接，ip为："+socket.getInetAddress());
+                log.info("客户端链接，ip：{}  端口：{}",socket.getInetAddress(),socket.getPort());
                 //启动线程
-                threadPool.execute(new WorkerThread(socket,service));
+                threadPool.execute(new RequestHandlerThread(socket,requestHandler,serviceRegistry));
             }
         } catch (IOException e) {
             log.error("连接时有错误发生：", e);

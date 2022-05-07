@@ -1,3 +1,5 @@
+import register.DefaultServiceRegistry;
+import register.ServiceRegistry;
 import server.RpcServer;
 
 /**
@@ -12,10 +14,15 @@ public class TestServer {
         //服务端实例，等待客户端调用
         HelloServiceImpl helloService = new HelloServiceImpl();
 
-        //rpcServer
-        RpcServer rpcServer = new RpcServer();
+        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
 
-        rpcServer.register(helloService,9000);
+        //向registry注册helloService
+        serviceRegistry.register(helloService);
+
+        //rpcServer
+        RpcServer rpcServer = new RpcServer(serviceRegistry);
+
+        rpcServer.start(9000);
 
     }
 }

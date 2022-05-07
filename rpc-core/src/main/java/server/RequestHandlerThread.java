@@ -3,6 +3,7 @@ package server;
 import entity.RpcRequest;
 import entity.RpcResponse;
 import lombok.extern.slf4j.Slf4j;
+import register.ServiceRegistry;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,14 +20,16 @@ import java.net.Socket;
  * @create: 2022-05-07 15:34
  **/
 @Slf4j
-public class WorkerThread implements Runnable {
+public class RequestHandlerThread implements Runnable {
 
     private Socket socket;
-    private Object service;
+    private RequestHandler requestHandler;
+    private ServiceRegistry serviceRegistry;
 
-    public WorkerThread(Socket socket, Object service) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
         this.socket = socket;
-        this.service = service;
+        this.requestHandler = requestHandler;
+        this.serviceRegistry = serviceRegistry;
     }
 
 
@@ -38,20 +41,20 @@ public class WorkerThread implements Runnable {
             //接收rpc请求
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
 
-            //解析请求，找到需要调用的服务端方法本身
-            Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+            //根据客户请求的接口再map中找已经注册的服务
+            String interfaceName = rpcRequest.getInterfaceName();
+            Object service = serviceRegistry.getService(interfaceName);
 
-            //在服务端调用方法本身
-            Object result = method.invoke(service, rpcRequest.getParameters());
+            //使用RequestHandler解析请求的服务和方法，并执行返回！
+            Object result = requestHandler.handle(rpcRequest, service);
 
             //封装rpcResponse  并且通过网络返回给客户端
             objectOutputStream.writeObject(RpcResponse.success(result));
             objectOutputStream.flush();
 
 
-        } catch (IOException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        } catch (IOException | ClassNotFoundException e) {
             log.error("连接时有错误发生：", e);
-
         }
 
     }
