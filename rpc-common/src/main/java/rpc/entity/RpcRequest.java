@@ -1,4 +1,4 @@
-package entity;
+package rpc.entity;
 
 import lombok.Builder;
 import lombok.Data;

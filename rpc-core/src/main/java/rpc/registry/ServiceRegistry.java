@@ -1,4 +1,4 @@
-package register;
+package rpc.registry;
 
 /**
  * @program: xu-rpc-framework-01

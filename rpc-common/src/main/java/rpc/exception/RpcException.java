@@ -1,6 +1,6 @@
-package exception;
+package rpc.exception;
 
-import enums.RpcError;
+import rpc.enums.RpcError;
 
 /**
  * @program: xu-rpc-framework-01

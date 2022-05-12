@@ -1,6 +1,6 @@
-package entity;
+package rpc.entity;
 
-import enums.ResponseCode;
+import rpc.enums.ResponseCode;
 import lombok.Data;
 
 import java.io.Serializable;

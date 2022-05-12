@@ -1,8 +1,8 @@
-package server;
+package rpc;
 
-import entity.RpcRequest;
-import entity.RpcResponse;
-import enums.ResponseCode;
+import rpc.entity.RpcRequest;
+import rpc.entity.RpcResponse;
+import rpc.enums.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;

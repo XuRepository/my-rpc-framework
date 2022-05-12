@@ -1,3 +1,5 @@
+package rpc;
+
 /**
  * @program: xu-rpc-framework-01
  * @description: 通用的接口

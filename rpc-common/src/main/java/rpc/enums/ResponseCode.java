@@ -1,4 +1,4 @@
-package enums;
+package rpc.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,3 +1,5 @@
+package rpc;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

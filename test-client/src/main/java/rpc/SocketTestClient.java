@@ -1,4 +1,4 @@
-import client.RpcClientProxy;
+package rpc;
 
 /**
  * @program: xu-rpc-framework-01
@@ -6,7 +6,7 @@ import client.RpcClientProxy;
  * @author: XuJY
  * @create: 2022-05-07 15:48
  **/
-public class TestClient {
+public class SocketTestClient {
 
     //客户端调用远程方法的时候，需要通过代理类来调用
     public static void main(String[] args) {

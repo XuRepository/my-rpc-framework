@@ -1,8 +1,7 @@
-package client;
+package rpc.socket.client;
 
-import entity.RpcRequest;
+import rpc.entity.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,7 +15,7 @@ import java.net.Socket;
  * @create: 2022-05-07 14:18
  **/
 @Slf4j
-public class RpcClient {
+public class SocketClient {
     public Object sendRequest(RpcRequest request,String host,int port){
 
         try(Socket socket = new Socket(host, port)){

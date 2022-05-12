@@ -1,10 +1,12 @@
-package client;
+package rpc;
 
-import entity.RpcRequest;
-import entity.RpcResponse;
+
+import rpc.entity.RpcRequest;
+import rpc.entity.RpcResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rpc.socket.client.SocketClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -40,7 +42,7 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .build();
 
-        RpcClient rpcClient = new RpcClient();
+        SocketClient rpcClient = new SocketClient();
         return ((RpcResponse)rpcClient.sendRequest(rpcRequest,host,port)).getData();
     }
 }

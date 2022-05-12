@@ -1,7 +1,7 @@
-package register;
+package rpc.registry;
 
-import enums.RpcError;
-import exception.RpcException;
+import rpc.enums.RpcError;
+import rpc.exception.RpcException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -18,10 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultServiceRegistry implements ServiceRegistry {
 
     //存放本地服务所实现的所有接口列表
-    private final Map<String,Object> serviceMap = new ConcurrentHashMap<String,Object>();
+    private final static Map<String,Object> serviceMap = new ConcurrentHashMap<String,Object>();
 
     //存放本地服务的service类名
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private final static Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
     public <T> void register(T service) {

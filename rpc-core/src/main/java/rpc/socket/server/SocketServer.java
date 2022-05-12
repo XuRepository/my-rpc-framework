@@ -1,7 +1,9 @@
-package server;
+package rpc.socket.server;
 
 import lombok.extern.slf4j.Slf4j;
-import register.ServiceRegistry;
+import rpc.RequestHandler;
+import rpc.registry.ServiceRegistry;
+
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,7 +19,7 @@ import java.util.concurrent.*;
  * @create: 2022-05-07 15:20
  **/
 @Slf4j
-public class RpcServer {
+public class SocketServer {
 
     private final ExecutorService threadPool;
 
@@ -25,10 +27,11 @@ public class RpcServer {
     private static final int MAXIMUM_POOL_SIZE = 50;
     private static final int KEEP_ALIVE_TIME = 60;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
+
     private RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         //初始化线程池
         this.serviceRegistry = serviceRegistry;
         BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);

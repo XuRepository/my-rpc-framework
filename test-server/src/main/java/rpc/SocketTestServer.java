@@ -1,6 +1,9 @@
-import register.DefaultServiceRegistry;
-import register.ServiceRegistry;
-import server.RpcServer;
+package rpc;
+
+import rpc.registry.DefaultServiceRegistry;
+import rpc.registry.ServiceRegistry;
+import rpc.socket.server.SocketServer;
+
 
 /**
  * @program: xu-rpc-framework-01
@@ -8,7 +11,7 @@ import server.RpcServer;
  * @author: XuJY
  * @create: 2022-05-07 15:47
  **/
-public class TestServer {
+public class SocketTestServer {
     public static void main(String[] args) {
 
         //服务端实例，等待客户端调用
@@ -20,7 +23,7 @@ public class TestServer {
         serviceRegistry.register(helloService);
 
         //rpcServer
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        SocketServer rpcServer = new SocketServer(serviceRegistry);
 
         rpcServer.start(9000);
 
