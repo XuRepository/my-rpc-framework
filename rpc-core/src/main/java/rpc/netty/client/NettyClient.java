@@ -18,6 +18,7 @@ import rpc.entity.RpcResponse;
 import rpc.netty.codec.CommonDecoder;
 import rpc.netty.codec.CommonEncoder;
 import rpc.netty.serializer.JsonSerializer;
+import rpc.netty.serializer.KryoSerializer;
 
 /**
  * @program: xu-rpc-framework-01
@@ -47,7 +48,7 @@ public class NettyClient implements RpcClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new CommonEncoder(new JsonSerializer()))
+                                .addLast(new CommonEncoder(new KryoSerializer()))
                                 .addLast(new CommonDecoder())
                                 .addLast(new NettyClientHandler());
 

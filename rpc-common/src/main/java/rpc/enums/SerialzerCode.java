@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public enum SerialzerCode {
 
+    KRYO(0),
     JSON(1);
 
     private int code;

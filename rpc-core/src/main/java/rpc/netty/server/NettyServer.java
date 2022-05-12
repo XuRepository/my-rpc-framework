@@ -14,6 +14,7 @@ import rpc.RpcServer;
 import rpc.netty.codec.CommonDecoder;
 import rpc.netty.codec.CommonEncoder;
 import rpc.netty.serializer.JsonSerializer;
+import rpc.netty.serializer.KryoSerializer;
 
 /**
  * @program: xu-rpc-framework-01
@@ -46,7 +47,7 @@ public class NettyServer implements RpcServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new CommonEncoder(new JsonSerializer()));
+                            ch.pipeline().addLast(new CommonEncoder(new KryoSerializer()));
                             ch.pipeline().addLast(new CommonDecoder());
                             ch.pipeline().addLast(new NettyServerHandler());
                             //NettyServerHandler 和 NettyClientHandler 都分别位于服务器端和客户端责任链的尾部，
