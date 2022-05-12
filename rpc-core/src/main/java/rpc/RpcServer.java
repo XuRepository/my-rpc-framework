@@ -7,5 +7,5 @@ package rpc;
  * @create: 2022-05-07 22:20
  **/
 public interface RpcServer {
-    void start(int port);
+    void start(int port) throws InterruptedException;
 }

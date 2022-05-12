@@ -3,10 +3,7 @@ package rpc;
 
 import rpc.entity.RpcRequest;
 import rpc.entity.RpcResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import rpc.socket.client.SocketClient;
+
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,13 +16,14 @@ import java.lang.reflect.Proxy;
  * @author: XuJY
  * @create: 2022-05-07 14:09
  **/
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class RpcClientProxy implements InvocationHandler {
 
-    private String host;
-    private int port;
+    private final RpcClient client;
+
+    public RpcClientProxy(RpcClient client) {
+        this.client = client;
+    }
 
     public <T> T getProxy(Class<T> clazz){
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(),new Class<?>[]{clazz},this);
@@ -42,7 +40,6 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .build();
 
-        SocketClient rpcClient = new SocketClient();
-        return ((RpcResponse)rpcClient.sendRequest(rpcRequest,host,port)).getData();
+        return ((RpcResponse)client.sendRequest(rpcRequest)).getData();
     }
 }

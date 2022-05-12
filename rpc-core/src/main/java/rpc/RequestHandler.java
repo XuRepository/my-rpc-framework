@@ -23,7 +23,7 @@ public class RequestHandler {
         //执行本地方法并且返回结果
         try {
             result = invokeTargetMethod(rpcRequest, service);
-            log.info("服务：{}  成功调用方法：{}", rpcRequest.getInterfaceName(),rpcRequest.getMethodName());
+            log.info("服务：{}  成功调用方法：{},  调用方法返回的结果：{}", rpcRequest.getInterfaceName(),rpcRequest.getMethodName(),result);
 
         } catch (InvocationTargetException | IllegalAccessException e) {
             log.error("调用或发送时有错误发生：", e);
@@ -38,6 +38,8 @@ public class RequestHandler {
         Method method = null;
         try {
             //解析请求，找到需要调用的服务端方法本身
+            //通过requestHandler，通过反射+本地服务实例+方法名+方法参数+参数类型---》调用方法并且返回结果！
+            //因为object对象的service实例无法调用相应方法，所以采取反射调用！
             method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
         } catch (NoSuchMethodException e) {
             return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND);

@@ -1,5 +1,6 @@
 package rpc.socket.client;
 
+import rpc.RpcClient;
 import rpc.entity.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +16,17 @@ import java.net.Socket;
  * @create: 2022-05-07 14:18
  **/
 @Slf4j
-public class SocketClient {
-    public Object sendRequest(RpcRequest request,String host,int port){
+public class SocketClient implements RpcClient {
+
+    private String host;
+    private int port;
+
+    public SocketClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+    @Override
+    public Object sendRequest(RpcRequest request){
 
         try(Socket socket = new Socket(host, port)){
 
@@ -31,6 +41,5 @@ public class SocketClient {
             return null;
         }
     }
-
 
 }

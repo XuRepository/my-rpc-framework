@@ -2,6 +2,7 @@ package rpc.socket.server;
 
 import lombok.extern.slf4j.Slf4j;
 import rpc.RequestHandler;
+import rpc.RpcServer;
 import rpc.registry.ServiceRegistry;
 
 
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
  * @create: 2022-05-07 15:20
  **/
 @Slf4j
-public class SocketServer {
+public class SocketServer implements RpcServer {
 
     private final ExecutorService threadPool;
 
