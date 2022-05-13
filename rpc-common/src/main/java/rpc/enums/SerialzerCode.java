@@ -11,7 +11,9 @@ import lombok.Getter;
 public enum SerialzerCode {
 
     KRYO(0),
-    JSON(1);
+    JSON(1),
+    HESSIAN(2),
+    PROTOBUF(3);
 
     private int code;
 }

@@ -1,6 +1,10 @@
 package rpc;
 
-import rpc.netty.client.NettyClient;
+import rpc.serializer.HessianSerializer;
+import rpc.transport.netty.client.NettyClient;
+import rpc.serializer.JsonSerializer;
+import rpc.transport.RpcClient;
+import rpc.transport.RpcClientProxy;
 
 /**
  * @program: xu-rpc-framework-01
@@ -12,7 +16,8 @@ public class NettyTestClient {
     public static void main(String[] args) {
         HelloObject helloObject = new HelloObject(2, "netty_rpc...");
 
-        RpcClient client = new NettyClient("127.0.0.1",9000);
+        RpcClient client = new NettyClient();
+        client.setSerializer(new HessianSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
 
         //获取到代理对象

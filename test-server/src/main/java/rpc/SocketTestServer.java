@@ -1,9 +1,7 @@
 package rpc;
 
-import rpc.netty.serializer.KryoSerializer;
-import rpc.provider.ServiceProviderImpl;
-import rpc.provider.ServiceProvider;
-import rpc.socket.server.SocketServer;
+import rpc.serializer.KryoSerializer;
+import rpc.transport.socket.server.SocketServer;
 
 
 /**
