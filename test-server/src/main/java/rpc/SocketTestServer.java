@@ -1,7 +1,8 @@
 package rpc;
 
-import rpc.registry.DefaultServiceRegistry;
-import rpc.registry.ServiceRegistry;
+import rpc.netty.serializer.KryoSerializer;
+import rpc.provider.ServiceProviderImpl;
+import rpc.provider.ServiceProvider;
 import rpc.socket.server.SocketServer;
 
 
@@ -13,19 +14,24 @@ import rpc.socket.server.SocketServer;
  **/
 public class SocketTestServer {
     public static void main(String[] args) {
+//
+//        //服务端实例，等待客户端调用
+//        HelloServiceImpl helloService = new HelloServiceImpl();
+//
+//        ServiceProvider serviceProvider = new ServiceProviderImpl();
+//
+//        //向registry注册helloService
+//        serviceProvider.addServiceProvider(helloService);
+//
+//        //rpcServer
+//        SocketServer rpcServer = new SocketServer("127.0.0.1",9000);
+//
+//        rpcServer.start();
 
-        //服务端实例，等待客户端调用
-        HelloServiceImpl helloService = new HelloServiceImpl();
-
-        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-
-        //向registry注册helloService
-        serviceRegistry.register(helloService);
-
-        //rpcServer
-        SocketServer rpcServer = new SocketServer(serviceRegistry);
-
-        rpcServer.start(9000);
+        HelloService helloService = new HelloServiceImpl();
+        SocketServer socketServer = new SocketServer("127.0.0.1", 9100);
+        socketServer.setSerializer(new KryoSerializer());
+        socketServer.publishService(helloService, HelloService.class);
 
     }
 }

@@ -1,4 +1,4 @@
-package rpc.registry;
+package rpc.provider;
 
 import rpc.enums.RpcError;
 import rpc.exception.RpcException;
@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create: 2022-05-07 19:58
  **/
 @Slf4j
-public class DefaultServiceRegistry implements ServiceRegistry {
+public class ServiceProviderImpl implements ServiceProvider {
 
     //存放本地服务所实现的所有接口列表
     private final static Map<String,Object> serviceMap = new ConcurrentHashMap<String,Object>();
@@ -24,7 +24,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private final static Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         String serviceName = service.getClass().getCanonicalName();
         if (registeredService.contains(serviceName)) return;
 
@@ -50,7 +50,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @return
      */
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null){
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);

@@ -8,6 +8,7 @@ import rpc.entity.RpcResponse;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * @program: xu-rpc-framework-01
@@ -34,12 +35,13 @@ public class RpcClientProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //建造者模式，lombok
         RpcRequest rpcRequest = RpcRequest.builder()
+                .requestId(UUID.randomUUID().toString())
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameters(args)
                 .paramTypes(method.getParameterTypes())
                 .build();
 
-        return ((RpcResponse)client.sendRequest(rpcRequest)).getData();
+        return client.sendRequest(rpcRequest);
     }
 }

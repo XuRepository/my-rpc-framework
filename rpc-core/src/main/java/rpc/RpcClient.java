@@ -1,6 +1,7 @@
 package rpc;
 
 import rpc.entity.RpcRequest;
+import rpc.netty.serializer.CommonSerializer;
 
 /**
  * @program: xu-rpc-framework-01
@@ -10,5 +11,8 @@ import rpc.entity.RpcRequest;
  **/
 public interface RpcClient {
     Object sendRequest(RpcRequest rpcRequest);
+
+    void setSerializer(CommonSerializer serializer);
+
 
 }

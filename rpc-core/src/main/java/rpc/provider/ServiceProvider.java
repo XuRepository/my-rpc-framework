@@ -1,4 +1,4 @@
-package rpc.registry;
+package rpc.provider;
 
 /**
  * @program: xu-rpc-framework-01
@@ -6,14 +6,14 @@ package rpc.registry;
  * @author: XuJY
  * @create: 2022-05-07 19:54
  **/
-public interface ServiceRegistry {
+public interface ServiceProvider {
 
     /**
      * 将一个服务注册进注册表
      * @param service 待注册的服务实体
      * @param <T> 服务实体类
      */
-    <T> void register(T service);
+    <T> void addServiceProvider(T service);
 
 
     /**
@@ -21,5 +21,5 @@ public interface ServiceRegistry {
      * @param serviceName 服务名称
      * @return 服务实体
      */
-    Object getService(String serviceName);
+    Object getServiceProvider(String serviceName);
 }

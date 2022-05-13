@@ -11,10 +11,19 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import rpc.RpcServer;
+import rpc.enums.RpcError;
+import rpc.exception.RpcException;
 import rpc.netty.codec.CommonDecoder;
 import rpc.netty.codec.CommonEncoder;
+import rpc.netty.registry.NacosServiceRegistry;
+import rpc.netty.registry.ServiceRegistry;
+import rpc.netty.serializer.CommonSerializer;
 import rpc.netty.serializer.JsonSerializer;
 import rpc.netty.serializer.KryoSerializer;
+import rpc.provider.ServiceProvider;
+import rpc.provider.ServiceProviderImpl;
+
+import java.net.InetSocketAddress;
 
 /**
  * @program: xu-rpc-framework-01
@@ -24,8 +33,25 @@ import rpc.netty.serializer.KryoSerializer;
  **/
 @Slf4j
 public class NettyServer implements RpcServer {
+
+
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+
+    private CommonSerializer serializer;
+
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        this.serviceRegistry = new NacosServiceRegistry();
+        this.serviceProvider = new ServiceProviderImpl();
+    }
+
     @Override
-    public void start(int port) {
+    public void start() {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -47,7 +73,8 @@ public class NettyServer implements RpcServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new CommonEncoder(new KryoSerializer()));
+//                            ch.pipeline().addLast(new CommonEncoder(new JsonSerializer()));
+                            ch.pipeline().addLast(new CommonEncoder(serializer));
                             ch.pipeline().addLast(new CommonDecoder());
                             ch.pipeline().addLast(new NettyServerHandler());
                             //NettyServerHandler 和 NettyClientHandler 都分别位于服务器端和客户端责任链的尾部，
@@ -56,7 +83,7 @@ public class NettyServer implements RpcServer {
                         }
                     });
             //sync是为了阻塞住线程，等待连接建立完毕，建立连接是异步操作，不阻塞继续运行可能获得到空的channel后面
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host,port).sync();
             //sync等待发生channel.close()方法，关闭channel结束，close是异步操作，所以这里需要阻塞住，不让线程往下运行，等待彻底结束之后优雅释放资源！
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
@@ -66,4 +93,26 @@ public class NettyServer implements RpcServer {
             workerGroup.shutdownGracefully();
         }
     }
+
+    @Override
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        if (serializer==null){
+            log.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+        //注册的时候首先把服务加入到本地的serviceProvider
+        serviceProvider.addServiceProvider(service);
+        //
+        serviceRegistry.register(serviceClass.getCanonicalName(),new InetSocketAddress(host,port));
+        start();
+
+
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
+    }
+
+
 }

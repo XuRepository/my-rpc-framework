@@ -1,7 +1,8 @@
 package rpc;
 
+import rpc.netty.serializer.KryoSerializer;
 import rpc.netty.server.NettyServer;
-import rpc.registry.DefaultServiceRegistry;
+import rpc.provider.ServiceProviderImpl;
 
 /**
  * @program: xu-rpc-framework-01
@@ -14,12 +15,10 @@ public class NettyTestServer {
 
         //创建服务端的服务实例，并且注册到注册中心去！
         HelloServiceImpl helloService = new HelloServiceImpl();
-        DefaultServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        serviceRegistry.register(helloService);
-
         //rpc netty server
-        NettyServer nettyServer = new NettyServer();
-        nettyServer.start(9000);
+        NettyServer nettyServer = new NettyServer("127.0.0.1",9001);
+        nettyServer.setSerializer(new KryoSerializer());
+        nettyServer.publishService(helloService,HelloService.class);
 
     }
 }

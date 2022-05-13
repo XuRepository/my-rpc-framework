@@ -2,13 +2,12 @@ package rpc.netty.server;
 
 import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.extern.slf4j.Slf4j;
 import rpc.RequestHandler;
 import rpc.entity.RpcRequest;
 import rpc.entity.RpcResponse;
-import rpc.registry.DefaultServiceRegistry;
-import rpc.registry.ServiceRegistry;
+import rpc.provider.ServiceProviderImpl;
+import rpc.provider.ServiceProvider;
 
 /**
  * @program: xu-rpc-framework-01
@@ -19,12 +18,12 @@ import rpc.registry.ServiceRegistry;
 @Slf4j
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
-    private static ServiceRegistry serviceRegistry;
+    private static ServiceProvider serviceProvider;
     private static RequestHandler requestHandler;
 
     //static代码块初始化static属性
     static {
-        serviceRegistry = new DefaultServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
         requestHandler=new RequestHandler();
     }
 
@@ -34,13 +33,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             String interfaceName = msg.getInterfaceName();
 
             //在服务端注册中心中查找要调用的服务的实例。
-            Object service = serviceRegistry.getService(interfaceName);
+            Object service = serviceProvider.getServiceProvider(interfaceName);
 
             //通过requestHandler，通过反射+本地服务实例+方法名+方法参数+参数类型---》调用方法并且返回结果！
-            Object result = requestHandler.handle(msg, service);
+            Object result = requestHandler.handle(msg);
 
             //把得到的结果封装为一个 RpcResponse实例，并且返回给客户端
-            ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(result));
+            ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(result,msg.getRequestId()));
             future.addListener(ChannelFutureListener.CLOSE);
         } finally {
             ReferenceCountUtil.release(msg);//释放责任链中的buffer

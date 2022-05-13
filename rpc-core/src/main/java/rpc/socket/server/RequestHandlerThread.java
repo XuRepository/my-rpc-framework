@@ -4,12 +4,14 @@ import rpc.entity.RpcRequest;
 import rpc.entity.RpcResponse;
 import lombok.extern.slf4j.Slf4j;
 import rpc.RequestHandler;
-import rpc.registry.ServiceRegistry;
+import rpc.netty.registry.ServiceRegistry;
+import rpc.netty.serializer.CommonSerializer;
+import rpc.provider.ServiceProvider;
+import rpc.socket.util.ObjectReader;
+import rpc.socket.util.ObjectWriter;
 
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -22,39 +24,53 @@ import java.net.Socket;
 @Slf4j
 public class RequestHandlerThread implements Runnable {
 
+
     private Socket socket;
     private RequestHandler requestHandler;
     private ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
         this.serviceRegistry = serviceRegistry;
+        this.serializer = serializer;
     }
 
 
     @Override
     public void run() {
 
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());){
-            //接收rpc请求
-            RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
+//        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());){
+//            //接收rpc请求
+//            RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
+//
+//            //根据客户请求的接口再map中找已经注册的服务
+//            String interfaceName = rpcRequest.getInterfaceName();
+//            Object service = serviceProvider.getServiceProvider(interfaceName);
+//
+//            //使用RequestHandler解析请求的服务和方法，并执行返回！
+//            Object result = requestHandler.handle(rpcRequest, service);
+//
+//            //封装rpcResponse  并且通过网络返回给客户端
+//            objectOutputStream.writeObject(RpcResponse.success(result));
+//            objectOutputStream.flush();
+//
+//
+//        } catch (IOException | ClassNotFoundException e) {
+//            log.error("连接时有错误发生：", e);
+//        }
+        try (InputStream inputStream = socket.getInputStream();
+             OutputStream outputStream = socket.getOutputStream()) {
 
-            //根据客户请求的接口再map中找已经注册的服务
+            RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
             String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getService(interfaceName);
-
-            //使用RequestHandler解析请求的服务和方法，并执行返回！
-            Object result = requestHandler.handle(rpcRequest, service);
-
-            //封装rpcResponse  并且通过网络返回给客户端
-            objectOutputStream.writeObject(RpcResponse.success(result));
-            objectOutputStream.flush();
-
-
-        } catch (IOException | ClassNotFoundException e) {
-            log.error("连接时有错误发生：", e);
+            Object result = requestHandler.handle(rpcRequest);
+            RpcResponse<Object> response = RpcResponse.success(result, rpcRequest.getRequestId());
+            ObjectWriter.writeObject(outputStream, response, serializer);
+        } catch (IOException e) {
+            log.error("调用或发送时有错误发生：", e);
         }
 
     }

@@ -1,5 +1,6 @@
 package rpc;
 
+import rpc.netty.serializer.KryoSerializer;
 import rpc.socket.client.SocketClient;
 
 /**
@@ -12,7 +13,9 @@ public class SocketTestClient{
 
     //客户端调用远程方法的时候，需要通过代理类来调用
     public static void main(String[] args) {
-        RpcClient client = new SocketClient("127.0.0.1", 9000);
+        RpcClient client = new SocketClient();
+        client.setSerializer(new KryoSerializer());
+
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
 
         //客户端调用的方法在这个对象内！
