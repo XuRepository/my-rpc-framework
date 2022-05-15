@@ -28,5 +28,10 @@ public class NettyTestClient {
         System.out.println(result);
 
 
+        ByeService bye = rpcClientProxy.getProxy(ByeService.class);
+        String res1 = bye.bye("王雅琪");
+        System.out.println(res1);
+
+
     }
 }

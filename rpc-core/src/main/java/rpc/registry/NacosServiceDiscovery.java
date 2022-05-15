@@ -34,7 +34,7 @@ public class NacosServiceDiscovery implements ServiceDiscovery{
             //每个serviceName服务会有 多个 提供者提供！！！
             //在 lookupService 方法中，通过 getAllInstance 获取到某个服务的所有提供者列表后，需要选择一个，
             // 这里就涉及了负载均衡策略，这里我们先选择第 0 个，后面某节会详细讲解负载均衡。
-            Instance instance = instances.get(0);
+            Instance instance = loadBalancer.select(instances);
             return new InetSocketAddress(instance.getIp(),instance.getPort());
         } catch (NacosException e) {
             log.error("注册服务时有错误发生:", e);

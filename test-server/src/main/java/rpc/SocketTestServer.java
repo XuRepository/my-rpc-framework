@@ -29,7 +29,7 @@ public class SocketTestServer {
         HelloService helloService = new HelloServiceImpl();
         SocketServer socketServer = new SocketServer("127.0.0.1", 9100);
         socketServer.setSerializer(new KryoSerializer());
-        socketServer.publishService(helloService, HelloService.class);
+//        socketServer.publishService(helloService, HelloService.class);
 
     }
 }

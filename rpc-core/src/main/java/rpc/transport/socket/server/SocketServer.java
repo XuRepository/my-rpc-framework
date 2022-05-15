@@ -2,6 +2,7 @@ package rpc.transport.socket.server;
 
 import lombok.extern.slf4j.Slf4j;
 import rpc.handler.RequestHandler;
+import rpc.transport.AbstractRpcServer;
 import rpc.transport.RpcServer;
 import rpc.enums.RpcError;
 import rpc.exception.RpcException;
@@ -27,7 +28,7 @@ import java.util.concurrent.*;
  * @create: 2022-05-07 15:20
  **/
 @Slf4j
-public class SocketServer implements RpcServer {
+public class SocketServer extends AbstractRpcServer {
 
     private final ExecutorService threadPool;
 
@@ -75,17 +76,17 @@ public class SocketServer implements RpcServer {
             log.error("连接时有错误发生：", e);
         }
     }
-
-    @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
-        if(serializer == null) {
-            log.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        serviceProvider.addServiceProvider(service);
-        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
-    }
+//
+//    @Override
+//    public <T> void publishService(Object service, Class<T> serviceClass) {
+//        if(serializer == null) {
+//            log.error("未设置序列化器");
+//            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+//        }
+//        serviceProvider.addServiceProvider(service);
+//        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+//        start();
+//    }
 
     @Override
     public void setSerializer(CommonSerializer serializer) {

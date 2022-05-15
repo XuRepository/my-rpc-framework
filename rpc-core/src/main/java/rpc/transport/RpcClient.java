@@ -10,6 +10,9 @@ import rpc.serializer.CommonSerializer;
  * @create: 2022-05-07 22:12
  **/
 public interface RpcClient {
+
+
+
     Object sendRequest(RpcRequest rpcRequest);
 
     void setSerializer(CommonSerializer serializer);

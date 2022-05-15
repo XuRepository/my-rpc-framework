@@ -45,6 +45,7 @@ public class NacosUtil {
     }
 
     public static void registerService(String serviceName, InetSocketAddress address) throws NacosException {
+        log.info("服务端向nacos注册服务：{}, ip:{}",serviceName,address);
         namingService.registerInstance(serviceName, address.getHostName(), address.getPort());
         NacosUtil.address = address;
         serviceNames.add(serviceName);

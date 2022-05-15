@@ -12,6 +12,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import rpc.hook.ShutdownHook;
+import rpc.transport.AbstractRpcServer;
 import rpc.transport.RpcServer;
 import rpc.enums.RpcError;
 import rpc.exception.RpcException;
@@ -33,22 +34,21 @@ import java.net.InetSocketAddress;
  * @create: 2022-05-07 23:47
  **/
 @Slf4j
-public class NettyServer implements RpcServer {
-
-
-    private final String host;
-    private final int port;
-
-    private final ServiceRegistry serviceRegistry;
-    private final ServiceProvider serviceProvider;
+public class NettyServer extends AbstractRpcServer {
 
     private CommonSerializer serializer;
 
-    public NettyServer(String host, int port) {
+    public NettyServer(String host, int port,Integer serializer) {
         this.host = host;
         this.port = port;
         this.serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = new ServiceProviderImpl();
+        this.serializer = CommonSerializer.getByCode(serializer);
+        scanService();
+    }
+
+    public NettyServer(String host,int port){
+        this(host,port,DEFAULT_SERIALIZER);
     }
 
     @Override
@@ -99,21 +99,19 @@ public class NettyServer implements RpcServer {
         }
     }
 
-    @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
-        if (serializer==null){
-            log.error("未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        //注册的时候首先把服务加入到本地的serviceProvider
-        serviceProvider.addServiceProvider(service);
-        //
-        serviceRegistry.register(serviceClass.getCanonicalName(),new InetSocketAddress(host,port));
-
-        start();
-
-
-    }
+//    @Override
+//    public <T> void publishService(Object service, Class<T> serviceClass) {
+//        if (serializer==null){
+//            log.error("未设置序列化器");
+//            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+//        }
+//        //注册的时候首先把服务加入到本地的serviceProvider
+//        serviceProvider.addServiceProvider(service);
+//        //
+//        serviceRegistry.register(serviceClass.getCanonicalName(),new InetSocketAddress(host,port));
+//
+//        start();
+//    }
 
     @Override
     public void setSerializer(CommonSerializer serializer) {
