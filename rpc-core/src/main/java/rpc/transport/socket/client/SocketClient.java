@@ -1,6 +1,7 @@
 package rpc.transport.socket.client;
 
 import lombok.Data;
+import rpc.loadBanlancer.RandomLoadBalancer;
 import rpc.registry.NacosServiceDiscovery;
 import rpc.registry.ServiceDiscovery;
 import rpc.transport.RpcClient;
@@ -24,7 +25,7 @@ import java.net.Socket;
 
 /**
  * @program: xu-rpc-framework-01
- * @description: PRC客户都安，负责发送rpc对象
+ * @description: PRC客户端，负责发送rpc对象
  * @author: XuJY
  * @create: 2022-05-07 14:18
  **/
@@ -37,7 +38,7 @@ public class SocketClient implements RpcClient {
     private CommonSerializer serializer;
 
     public SocketClient() {
-        this.serviceDiscovery = new NacosServiceDiscovery();
+        this.serviceDiscovery = new NacosServiceDiscovery(new RandomLoadBalancer());
     }
 
     @Override

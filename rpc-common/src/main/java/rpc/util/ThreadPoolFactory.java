@@ -8,7 +8,9 @@ import java.util.concurrent.*;
 
 /**
  * @program: xu-rpc-framework-01
- * @description: 创建 ThreadPool(线程池) 的工具类.
+ * @description:
+ * 创建 ThreadPool(线程池) 的工具类，
+ * 管理线程池（netty中线程池主要用于NettyServerHandler.channelRead0使用的）.
  * @author: XuJY
  * @create: 2022-05-13 14:37
  **/

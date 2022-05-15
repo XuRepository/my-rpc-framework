@@ -5,6 +5,8 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import lombok.extern.slf4j.Slf4j;
 import rpc.enums.RpcError;
 import rpc.exception.RpcException;
+import rpc.loadBanlancer.LoadBalancer;
+import rpc.loadBanlancer.RandomLoadBalancer;
 import rpc.util.NacosUtil;
 
 import java.net.InetSocketAddress;
@@ -12,12 +14,19 @@ import java.util.List;
 
 /**
  * @program: xu-rpc-framework-01
- * @description: 服务发现实现
+ * @description: 服务发现实现,选择负载均衡
  * @author: XuJY
  * @create: 2022-05-15 15:00
  **/
 @Slf4j
 public class NacosServiceDiscovery implements ServiceDiscovery{
+    private LoadBalancer loadBalancer;
+
+    public NacosServiceDiscovery(LoadBalancer loadBalancer) {
+        if (loadBalancer==null) loadBalancer = new RandomLoadBalancer();
+        this.loadBalancer = loadBalancer;
+    }
+
     @Override
     public InetSocketAddress lookupService(String serviceName) {
         try {

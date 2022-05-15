@@ -5,6 +5,8 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
+import rpc.loadBanlancer.LoadBalancer;
+import rpc.loadBanlancer.RandomLoadBalancer;
 import rpc.registry.NacosServiceDiscovery;
 import rpc.registry.ServiceDiscovery;
 import rpc.transport.RpcClient;
@@ -34,9 +36,14 @@ public class NettyClient implements RpcClient {
     private final ServiceDiscovery serviceDiscovery;
     private CommonSerializer serializer;
 
-    public NettyClient() {
-        this.serviceDiscovery = new NacosServiceDiscovery();
+    public NettyClient(LoadBalancer loadBalancer) {
+        this.serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
     }
+
+    public NettyClient() {
+        this.serviceDiscovery = new NacosServiceDiscovery(new RandomLoadBalancer());
+    }
+
 
 //    static {
 //        bootstrap = new Bootstrap();

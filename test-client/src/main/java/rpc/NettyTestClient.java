@@ -1,5 +1,6 @@
 package rpc;
 
+import rpc.loadBanlancer.RoundRobinLoadBalancer;
 import rpc.serializer.HessianSerializer;
 import rpc.transport.netty.client.NettyClient;
 import rpc.serializer.JsonSerializer;
@@ -16,7 +17,7 @@ public class NettyTestClient {
     public static void main(String[] args) {
         HelloObject helloObject = new HelloObject(2, "netty_rpc...");
 
-        RpcClient client = new NettyClient();
+        RpcClient client = new NettyClient(new RoundRobinLoadBalancer());
         client.setSerializer(new HessianSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
 
