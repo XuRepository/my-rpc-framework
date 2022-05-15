@@ -1,5 +1,6 @@
 package rpc.transport.netty.server;
 
+import com.alibaba.nacos.api.exception.NacosException;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
+import rpc.hook.ShutdownHook;
 import rpc.transport.RpcServer;
 import rpc.enums.RpcError;
 import rpc.exception.RpcException;
@@ -20,6 +22,7 @@ import rpc.registry.ServiceRegistry;
 import rpc.serializer.CommonSerializer;
 import rpc.provider.ServiceProvider;
 import rpc.provider.ServiceProviderImpl;
+import rpc.util.NacosUtil;
 
 import java.net.InetSocketAddress;
 
@@ -83,6 +86,10 @@ public class NettyServer implements RpcServer {
             //sync是为了阻塞住线程，等待连接建立完毕，建立连接是异步操作，不阻塞继续运行可能获得到空的channel后面
             ChannelFuture future = serverBootstrap.bind(host,port).sync();
             //sync等待发生channel.close()方法，关闭channel结束，close是异步操作，所以这里需要阻塞住，不让线程往下运行，等待彻底结束之后优雅释放资源！
+
+            //钩子函数添加，用于关闭的时候自动注销服务
+            ShutdownHook.getShutdownHook().addClearAllHook();
+
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("服务器错误：",e);
@@ -102,6 +109,7 @@ public class NettyServer implements RpcServer {
         serviceProvider.addServiceProvider(service);
         //
         serviceRegistry.register(serviceClass.getCanonicalName(),new InetSocketAddress(host,port));
+
         start();
 
 

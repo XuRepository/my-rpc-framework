@@ -5,6 +5,8 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
+import rpc.registry.NacosServiceDiscovery;
+import rpc.registry.ServiceDiscovery;
 import rpc.transport.RpcClient;
 import rpc.entity.RpcRequest;
 import rpc.entity.RpcResponse;
@@ -29,11 +31,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NettyClient implements RpcClient {
 
 //    private static final Bootstrap bootstrap;
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
     private CommonSerializer serializer;
 
     public NettyClient() {
-        this.serviceRegistry = new NacosServiceRegistry();
+        this.serviceDiscovery = new NacosServiceDiscovery();
     }
 
 //    static {
@@ -67,7 +69,7 @@ public class NettyClient implements RpcClient {
 
         try {
             //从nacos注册中心获取目标服务端地址
-            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
 
 //            ChannelFuture future = bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).sync();//同步阻塞 等待连接建立完成！

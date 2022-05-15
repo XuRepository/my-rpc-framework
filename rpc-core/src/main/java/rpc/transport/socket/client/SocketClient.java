@@ -1,6 +1,8 @@
 package rpc.transport.socket.client;
 
 import lombok.Data;
+import rpc.registry.NacosServiceDiscovery;
+import rpc.registry.ServiceDiscovery;
 import rpc.transport.RpcClient;
 import rpc.entity.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +32,12 @@ import java.net.Socket;
 @Data
 public class SocketClient implements RpcClient {
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
 
     public SocketClient() {
-        this.serviceRegistry = new NacosServiceRegistry();
+        this.serviceDiscovery = new NacosServiceDiscovery();
     }
 
     @Override
@@ -46,7 +48,7 @@ public class SocketClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         //首先向nacos获取服务地址！
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
 
         try(Socket socket = new Socket()){
             //建立和服务端的连接
