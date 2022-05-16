@@ -23,15 +23,18 @@ public class NettyTestClient {
 
         //获取到代理对象
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-
         String result = helloService.hello(helloObject);//代理方法，实际上调用的是rpcClientProxy中的invoke方法！
         System.out.println(result);
+        //获取到代理对象
+        String result2 = helloService.hello(helloObject);//代理方法，实际上调用的是rpcClientProxy中的invoke方法！
+        System.out.println(result2);
 
 
         ByeService bye = rpcClientProxy.getProxy(ByeService.class);
-        String res1 = bye.bye("王雅琪");
+        String res1 = bye.bye("王雅琪1");
         System.out.println(res1);
-
+        String res2 = bye.bye("王雅琪2");
+        System.out.println(res1);
 
     }
 }

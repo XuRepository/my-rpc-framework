@@ -21,7 +21,7 @@ public class NettyTestServer {
 //        NettyServer nettyServer = new NettyServer("127.0.0.1",9001);
 //        nettyServer.setSerializer(new HessianSerializer());
 ////        nettyServer.publishService(helloService,HelloService.class);
-        NettyServer server = new NettyServer("127.0.0.1", 9001);
+        NettyServer server = new NettyServer("127.0.0.1", Integer.parseInt(args[0]));
         server.start();
 
     }
